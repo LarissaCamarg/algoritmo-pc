@@ -17,7 +17,6 @@ Repositório criado para organizar e compartilhar meus estudos em linguagem C, r
 - [Aula 08](#aula-08)
 - [Aula 09](#aula-09)
 - [Aula 02](#aula-02)
-- [Teste](#teste)
 
 ## Conteúdo do repositório
 
