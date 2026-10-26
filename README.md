@@ -1,4 +1,4 @@
-Algoritmo e Pensamento Computacional
+Algoritmos e Pensamento Computacional
 
 Larissa Camargo dos Santos - RGM 47150815;
 Algoritmo e Pensamento Computacional;
