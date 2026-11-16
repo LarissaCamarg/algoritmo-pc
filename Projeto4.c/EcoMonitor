@@ -1,0 +1,181 @@
+
+/*
+ * PROJETO 4 — ECOMONITOR (CODIGO INICIAL)
+ * Complete todas as funções e carregarMedicoes().
+ * A base da função main() está implementada!
+ */
+#include <stdio.h>
+
+#define LOCAIS 3
+#define DIAS 5
+#define LIMITE_ALERTA 30
+
+/* Protótipos */
+int carregarMedicoes(const char *nomeArquivo, int dados[LOCAIS][DIAS]);
+float calcularMediaLocal(int dados[LOCAIS][DIAS], int local);
+float calcularMediaGeral(int dados[LOCAIS][DIAS]);
+int contarAlertasLocal(int dados[LOCAIS][DIAS], int local);
+int encontrarDiaMaisQuente(int dados[LOCAIS][DIAS]);
+void exibirRelatorio(FILE *destino, int dados[LOCAIS][DIAS]);
+
+int main(void) {
+    int temperaturas[LOCAIS][DIAS];
+    FILE *arquivo;
+
+    if (!carregarMedicoes("teste2.txt", temperaturas)) {
+        printf("Erro: nao foi possivel ler as 15 medicoes de medicoes.txt.\n");
+        return 1;
+    }
+
+    exibirRelatorio(stdout, temperaturas);
+
+    arquivo = fopen("relatorio.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro: nao foi possivel criar relatorio.txt.\n");
+        return 1;
+    }
+    exibirRelatorio(arquivo, temperaturas);
+    fclose(arquivo);
+    printf("Relatorio salvo em relatorio.txt\n");
+    return 0;
+}
+
+/* FUNCAO FORNECIDA — NAO ALTERAR */
+int carregarMedicoes(const char *nomeArquivo, int dados[LOCAIS][DIAS]) {
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    int i, j;
+    if (arquivo == NULL) return 0;
+    for (i = 0; i < LOCAIS; i++) {
+        for (j = 0; j < DIAS; j++) {
+            if (fscanf(arquivo, "%d", &dados[i][j]) != 1) {
+                fclose(arquivo);
+                return 0;
+            }
+        }
+    }
+    fclose(arquivo);
+    return 1;
+}
+
+/* 1 — media das temperaturas de uma localidade (linha) */
+float calcularMediaLocal(int dados[LOCAIS][DIAS], int local) {
+
+    int i;
+    int soma = 0;
+
+    // adicionado: percorre os dias da localidade
+    for (i = 0; i < DIAS; i++) {
+        soma += dados[local][i];
+    }
+
+    // adicionado: calcula e retorna a média
+    return (float)soma / DIAS;
+}
+
+/* 2 — media de todas as 15 temperaturas */
+float calcularMediaGeral(int dados[LOCAIS][DIAS]) {
+
+    int i, j;
+    int soma = 0;
+
+    // adicionado: percorre todas as linhas e colunas
+    for (i = 0; i < LOCAIS; i++) {
+        for (j = 0; j < DIAS; j++) {
+            soma += dados[i][j];
+        }
+    }
+
+    // adicionado: divide pela quantidade total de temperaturas
+    return (float)soma / (LOCAIS * DIAS);
+}
+
+/* 3 — contar temperaturas >= LIMITE_ALERTA numa linha */
+int contarAlertasLocal(int dados[LOCAIS][DIAS], int local) {
+
+    int i;
+    int contador = 0;
+
+    // adicionado: percorre os dias da localidade
+    for (i = 0; i < DIAS; i++) {
+
+        // adicionado: verifica se a temperatura é um alerta
+        if (dados[local][i] >= LIMITE_ALERTA) {
+            contador++;
+        }
+    }
+
+    // adicionado: retorna a quantidade de alertas
+    return contador;
+}
+
+/* 4 — retornar o INDICE (0 a 4) do dia de maior media */
+int encontrarDiaMaisQuente(int dados[LOCAIS][DIAS]) {
+
+    int dia, local;
+    int soma;
+    int maiorSoma = 0;
+    int diaMaisQuente = 0;
+
+    // adicionado: calcula a soma das temperaturas de cada dia
+    for (dia = 0; dia < DIAS; dia++) {
+
+        soma = 0;
+
+        // adicionado: soma as temperaturas das três localidades
+        for (local = 0; local < LOCAIS; local++) {
+            soma += dados[local][dia];
+        }
+
+        // adicionado: compara com a maior média encontrada
+        // Como todos os dias têm três localidades,
+        // comparar as somas equivale a comparar as médias.
+        if (dia == 0 || soma > maiorSoma) {
+            maiorSoma = soma;
+            diaMaisQuente = dia;
+        }
+    }
+
+    // adicionado: retorna o índice do dia mais quente
+    return diaMaisQuente;
+}
+
+/* 5 — exibir o relatorio usando fprintf(destino, ...) */
+void exibirRelatorio(FILE *destino, int dados[LOCAIS][DIAS]) {
+
+    const char *nomes[LOCAIS] = {"Centro", "Norte", "Sul"};
+
+    int i;
+    int totalAlertas = 0;
+    int alertas;
+
+    // adicionado: exibe o título do relatório
+    fprintf(destino, "===== ECOMONITOR =====\n");
+
+    // adicionado: exibe a média geral
+    fprintf(destino, "Media geral: %.2f C\n\n",
+            calcularMediaGeral(dados));
+
+    // adicionado: calcula e exibe os dados de cada localidade
+    for (i = 0; i < LOCAIS; i++) {
+
+        alertas = contarAlertasLocal(dados, i);
+
+        fprintf(destino, "%s: media %.2f C | alertas: %d\n",
+                nomes[i],
+                calcularMediaLocal(dados, i),
+                alertas);
+
+        // adicionado: acumula o total de alertas
+        totalAlertas += alertas;
+    }
+
+    // adicionado: exibe o dia com maior média
+    fprintf(destino, "Dia com maior media: Dia %d\n",
+            encontrarDiaMaisQuente(dados) + 1);
+
+    // adicionado: exibe o total de alertas
+    fprintf(destino, "Total de alertas: %d\n", totalAlertas);
+
+    // adicionado: finaliza o relatório
+    fprintf(destino, "======================\n");
+}
