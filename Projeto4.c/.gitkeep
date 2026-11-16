@@ -1,0 +1,15 @@
+1. Contexto
+Uma empresa de tecnologia ambiental desenvolve o EcoMonitor, um sistema de acompanhamento das
+temperaturas registradas em diferentes regiões de uma cidade. Durante cinco dias, sensores instalados
+em três localidades — Centro, Norte e Sul — registraram temperaturas. A equipe precisa processar as
+informações para comparar as regiões, localizar o período mais quente e identificar temperaturas críticas.
+
+2. Problema
+Desenvolva, em linguagem C, um programa que leia uma matriz de temperaturas com 3 linhas × 5
+colunas e apresente:
+1. Média geral de todas as 15 temperaturas.
+2. Média de cada localidade durante os cinco dias.
+3. Dia de maior média, considerando conjuntamente as três localidades.
+4. Número de alertas por localidade e total de alertas. É alerta toda temperatura maior ou igual a
+30 °C.
+O programa deverá exibir os resultados no terminal e gravar o mesmo relatório em relatorio.txt.
